@@ -14,8 +14,8 @@ IF NOT DEFINED VCVARSALL (
 )
 CALL %VCVARSALL% amd64
 @ECHO ON
-SET rootdir=%~dp0
 SET cwdir=%CD%
+SET rootdir=%~dp0
 SET target=windows_x86_64
 SET prefix=%rootdir%%target%
 SET openssldir=%prefix%\ssl
