@@ -4,21 +4,22 @@ cwdir=`pwd`
 rootdir=`dirname "$0"`
 cd "$rootdir"
 rootdir=`pwd`
+tmpdir=/tmp/libsundaowen_openssl
 target=macos_x86_64
-prefix=$rootdir/$target
+prefix=$tmpdir/$target
 openssldir=$prefix/ssl
-version=`cat $rootdir/version.txt`
-rm -rf "$rootdir/$version"
-mkdir "$rootdir/$version"
-cp -rf "$rootdir/../$version/"* "$rootdir/$version"
-cd "$rootdir/$version"
+version=`cat "$rootdir/version.txt"`
+rm -rf "$tmpdir/$version"
+mkdir -p "$tmpdir/$version"
+cp -rf "$rootdir/../$version/"* "$tmpdir/$version"
+cd "$tmpdir/$version"
 ./Configure no-shared no-asm no-dso --prefix="$prefix" --openssldir="$openssldir" darwin64-x86_64-cc -m64 -fPIC
 make
 make install
-mkdir "$rootdir/../target/include/$target"
+mkdir -p "$rootdir/../target/include/$target"
 cp -rf "$prefix/include/"* "$rootdir/../target/include/$target"
-mkdir "$rootdir/../target/lib/$target"
+mkdir -p "$rootdir/../target/lib/$target"
 cp -f "$prefix/lib/"*.a "$rootdir/../target/lib/$target"
 cd "$cwdir"
-rm -rf "$rootdir/$version"
+rm -rf "$tmpdir"
 rm -rf "$prefix"
