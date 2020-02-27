@@ -14,28 +14,26 @@ IF NOT DEFINED VCVARSALL (
 )
 CALL %VCVARSALL% x86
 @ECHO ON
-SET cwdir=%CD%
-SET rootdir=%~dp0
-SET tmpdir=%~d0\tmp_libsundaowen_openssl\
+PUSHD "%~dp0"
+SET tmpdir=%~d0\tmp_libsundaowen_openssl
 SET target=windows_x86_32
-SET prefix=%tmpdir%%target%
+SET prefix=%tmpdir%\%target%
 SET openssldir=%prefix%\ssl
-SET /P version=<"%rootdir%version.txt"
-RD /S /Q "%tmpdir%%version%"
-MD "%tmpdir%%version%"
-XCOPY "%rootdir%..\%version%" "%tmpdir%%version%" /S /Y
-CD /D "%tmpdir%%version%"
-perl Configure VC-WIN32 no-shared no-asm no-dso --prefix="%prefix%" --openssldir="%openssldir%"
-CALL ms\do_ms.bat
-nmake -f ms\nt.mak
-nmake -f ms\nt.mak install
-MD "%rootdir%..\target\include\%target%"
-XCOPY "%prefix%\include" "%rootdir%..\target\include\%target%" /S /Y
-MD "%rootdir%..\target\lib\%target%%target_lib_suffix%"
-COPY /Y "%prefix%\lib\libeay32.lib" "%rootdir%..\target\lib\%target%%target_lib_suffix%"
-CD /D "%cwdir%"
+SET /P version=<version.txt
+RD /S /Q "%tmpdir%\%version%"
+MD "%tmpdir%\%version%"
+XCOPY "..\%version%" "%tmpdir%\%version%" /S /Y
+PUSHD "%tmpdir%\%version%"
+perl Configure VC-WIN32 no-shared no-asm --prefix="%prefix%" --openssldir="%openssldir%"
+nmake
+nmake install
+POPD
+MD "..\target\include\%target%"
+XCOPY "%prefix%\include" "..\target\include\%target%" /S /Y
+MD "..\target\lib\%target%%target_lib_suffix%"
+COPY /Y "%prefix%\lib\*.lib" "..\target\lib\%target%%target_lib_suffix%"
+POPD
 RD /S /Q "%tmpdir%"
-RD /S /Q "%prefix%"
 GOTO :EOF
 
 :ERROR
